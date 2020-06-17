@@ -17,40 +17,16 @@ jobs:
           channel: 'beta'
     - run: flutter pub get
     
-    #lane: build number
-    
-    - name: Generate build number
-      uses: einaregilsson/build-number@v2 
-      with:
-        token: ${{secrets.github_token}}        
-    - name: Print new build number
-      run: echo "Build number is $BUILD_NUMBER"
-      # Or, if you're on Windows: echo "Build number is ${env:BUILD_NUMBER}"
-    
-    #lane: build develop
-    - name: Build
-      run: |
-        mkdir $HOME/secrets
-        gpg --quiet --batch --yes --decrypt --passphrase="$SECRET_PASSPHRASE" \
-        --output $HOME/secrets/secrets.tar secrets.tar.gpg
-        tar xvf $HOME/secrets/secrets.tar
-        flutter build appbundle
-        flutter build apk
-      env:
-        SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE }}
-    - name: Upload
-      uses: actions/upload-artifact@master
-      with:
-        name: apk-build
-        path: build/app/outputs/bundle/release
-        
-        
-    - name: Deploy
-      if: (github.base_ref == 'master' && github.event_name == 'pull_request')
-      uses: wzieba/Firebase-Distribution-Github-Action@v1.2.1
-      with:
-        appId: ${{secrets.FIREBASE_ANDROID_APPID}}
-        token: ${{secrets.FIREBASE_TOKEN}}
-        groups: tester-ci
-        release_notes: "Build Android version $BUILD_NUMBER"
-        file: build/app/outputs/apk/release/app-release.apk
+      name: Sending notification
+          run |
+            if [[ true ]];  then
+              curl -X POST -H "X-ChatWorkToken: 9fd8ba9fc90153fa9affec49f3d2b8cf" -d \
+                "body=
+                - Repository name: ABC
+                - Author: ABC
+                - Branch: ABC
+                - Commit/pull request link: https://github.com
+                - Build link: ABC
+                " \
+                "https://api.chatwork.com/v2/rooms/193066762/messages"
+            fi
