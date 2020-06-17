@@ -17,16 +17,10 @@ jobs:
           channel: 'beta'
     - run: flutter pub get
     
-    - name: Sending notification
-          run |
-            if [[ true ]];  then
-              curl -X POST -H "X-ChatWorkToken: 9fd8ba9fc90153fa9affec49f3d2b8cf" -d \
-                "body=
-                - Repository name: ABC
-                - Author: ABC
-                - Branch: ABC
-                - Commit/pull request link: https://github.com
-                - Build link: ABC
-                " \
-                "https://api.chatwork.com/v2/rooms/193066762/messages"
-            fi
+    - name: Send a message to Chatwork
+      uses: szkkentaro/chatwork-action@master
+      env:
+        CHATWORK_TOKEN: ${{ secrets.CHATWORK_TOKEN }}
+        CHATWORK_ROOM_ID: ${{ secrets.CHATWORK_ROOM_ID }}
+        CHATWORK_MESSAGE_BODY: "(y) デプロイされました🚀"
+        CHATWORK_SELF_UNREAD: 0
