@@ -56,10 +56,16 @@ jobs:
           file: build/app/outputs/apk/release/app-release.apk
     
     - name: Send a message to Chatwork
-      uses: szkkentaro/chatwork-action@master
-      env:
-        CHATWORK_TOKEN: ${{ secrets.CHATWORK_TOKEN }}
-        CHATWORK_ROOM_ID: ${{ secrets.CHATWORK_ROOM_ID }}
-        CHATWORK_MESSAGE_BODY: "(y) デプロイされました🚀"
-        CHATWORK_SELF_UNREAD: 0
+      run: |
+        if [[ true ]];  then
+              curl -X POST -H "X-ChatWorkToken: ${secrets.CHATWORK_TOKEN}" -d \
+                "body=
+                - Repository name: ABC
+                - Author: ABC
+                - Branch: ABC
+                - Commit/pull request link: https://github.com
+                - Build link: ABC
+                " \
+                "https://api.chatwork.com/v2/rooms/${secrets.CHATWORK_ROOM_ID}/messages"
+            fi
     
