@@ -1,0 +1,31 @@
+name: CI/CD
+on: [pull_request, push]
+
+jobs:
+
+  build_and_deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/checkout@v1
+    - uses: actions/setup-java@v1
+      with:
+        java-version: '12.x'
+    - uses: subosito/flutter-action@v1
+      with:
+          channel: 'beta'
+    - run: flutter pub get
+    
+    #lane: build number
+
+    - name: Generate build number
+      uses: einaregilsson/build-number@v2
+      with:
+        token: ${{secrets.github_token}}
+    - name: Print new build number
+      run: echo "Build number is $BUILD_NUMBER"
+    - name: Print label
+      if: contains(github.event.pull_request.labels.*.name, 'bug')
+      run: echo "Build label"
+    
